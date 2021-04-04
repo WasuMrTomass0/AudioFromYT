@@ -16,18 +16,18 @@ class ShowProgress:
     """
     Class used to print out progress info while downloading/processing data.
     """
-    def __init__(self, maxCntValue: int, stages: int, msg: str = '*', end: str = ''):
+    def __init__(self, max_value: int, stages: int, msg: str = '*', end: str = ''):
         """
 
-        :param maxCntValue: Value interpreted as 100%
+        :param max_value: Value interpreted as 100%
         :param stages: How many msg will be printed as 100%
         :param msg: Single msg output each stage
         :param end: End str used for build in print function
         """
         # Disable flag if maxCntValue is too small
-        self.disable = maxCntValue < 10
+        self.disable = max_value < 10
         self._cnt = 0
-        self._step = maxCntValue // stages
+        self._step = max_value // stages
         if self._step == 0:
             self._step = 1
         self._msg = msg
@@ -51,11 +51,11 @@ class ShowProgress:
     pass
 
 
-def searchForFile(name: str, path: str = '') -> str:
+def searchForFile(sub_string: str, path: str = '') -> str:
     """
     Search for file containing substring. It is used to locate downloaded audio file.
     Each file has id substring in name.
-    :param name: Search substring
+    :param sub_string: Search substring
     :param path: Relative directory where to search
     :return: Full file name
     """
@@ -63,7 +63,7 @@ def searchForFile(name: str, path: str = '') -> str:
         path += '\\'
     dirs = glob.glob(path + "*.*")
     for elem in dirs:
-        if name in elem:
+        if sub_string in elem:
             return elem
         pass
     return ''
@@ -109,54 +109,54 @@ def downloadAudioFromURL(url: str):
     pass
 
 
-def printer(txt, end: str = None, printAnyway: bool = False) -> None:
+def printer(msg: str, end: str = None, force_print: bool = False) -> None:
     """
     Function used for debug to print info in console
-    :param txt: Text to be printed
+    :param msg: Text to be printed
     :param end: End statement for build in print function
-    :param printAnyway: Skip global flag (PRINT_INFO)
+    :param force_print: Skip global flag (PRINT_INFO)
     :return:
     """
     try:
-        if PRINT_INFO or printAnyway:
+        if PRINT_INFO or force_print:
             if end is None:
-                print(txt)
+                print(msg)
             else:
-                print(txt, end=end)
+                print(msg, end=end)
     except UnicodeEncodeError:
-        print(txt.encode("utf-8"))
+        print(msg.encode("utf-8"))
     pass
 
 
-def readAndSortTxtFile(txtName: str) -> List[str]:
+def readAndSortTxtFile(file_name: str) -> List[str]:
     """
     Reads text file and returns alphabetically sorted lines
-    :param txtName: File name
+    :param file_name: File name
     :return: List of lines from text file
     """
-    if not os.path.isfile(txtName):
-        printer(f'No such file!: {txtName}')
+    if not os.path.isfile(file_name):
+        printer(f'No such file!: {file_name}', force_print=True)
         return []
 
-    with open(txtName, 'r') as token:
+    with open(file_name, 'r') as token:
         lines = token.readlines()
 
     lines.sort()
-    printer(f"Read {len(lines)} lines from {txtName} file.")
+    printer(f"Read {len(lines)} lines from {file_name} file.")
     return lines
 
 
-def split_author_title(txt_lines: List[str], author_title_split_char='-', titles_split_char=',') \
+def split_author_title(input_lines: List[str], author_title_split_char='-', titles_split_char=',') \
         -> List[Tuple[str, str]]:
     """
     Splits author and song title info from each line
-    :param txt_lines: List of lines from txt file
+    :param input_lines: List of lines from txt file
     :param author_title_split_char: Character used to split author and song titles
     :param titles_split_char: Character used to split song titles
     :return: Returns list of tuples (author, song title)
     """
     author_title = []
-    for line in txt_lines:
+    for line in input_lines:
         line = line.replace('\n', '')
         line = line.replace('\t', '')
         line = line.replace('.', '')
@@ -263,15 +263,15 @@ def changeDir(directory: str) -> None:
     pass
 
 
-def downloadFiles(songsObjects: List[SongObj]) -> None:
+def downloadFiles(songs_objects: List[SongObj]) -> None:
     """
     Downloads audio file from YouTube video and updates stored filename for each song object
-    :param songsObjects: List of songObjects
+    :param songs_objects: List of songObjects
     :return:
     """
-    printer(f"Downloading {len(songsObjects)} items from YouTube")
-    sp = ShowProgress(len(songsObjects), 10)
-    for elem in songsObjects:
+    printer(f"Downloading {len(songs_objects)} items from YouTube")
+    sp = ShowProgress(len(songs_objects), 10)
+    for elem in songs_objects:
         sp.step()
         title, _id = downloadAudioFromURL(elem.link)
         if title is None or _id is None:
@@ -290,39 +290,39 @@ def downloadFiles(songsObjects: List[SongObj]) -> None:
     pass
 
 
-def convertAudioFile(filePath: str, toExt: str = 'mp3') -> str:
+def convertAudioFile(file_name: str, to_ext: str = 'mp3') -> str:
     """
     Converts audio file using ffmpeg
-    :param filePath: Audio file to convert
-    :param toExt: New file extension
+    :param file_name: Audio file to convert
+    :param to_ext: New file extension
     :return: New file full name
     """
     # fileExt = filePath.split('.')[-1]
-    fileName = filePath.split('.')[0]
-    outName = fileName + '.' + toExt
+    fileName = file_name.split('.')[0]
+    outName = fileName + '.' + to_ext
     # Convert file
-    os.system(f'ffmpeg -i "{filePath}" -acodec libmp3lame -loglevel quiet -hide_banner -y "{outName}"')
+    os.system(f'ffmpeg -i "{file_name}" -acodec libmp3lame -loglevel quiet -hide_banner -y "{outName}"')
     return outName
 
 
-def is_mp3_valid(filePath: str) -> bool:
+def is_mp3_valid(file_name: str) -> bool:
     """
     Checks if audio file is mp3 valid
-    :param filePath: Audio file name with path
+    :param file_name: Audio file name with path
     :return: Verification result
     """
-    return eyed3.load(filePath) is not None
+    return eyed3.load(file_name) is not None
 
 
-def changeExtensions(songsObjects: List[SongObj]) -> None:
+def changeExtensions(songs_objects: List[SongObj]) -> None:
     """
     Converts all audio files from given list and updates filename properties
-    :param songsObjects: List of songObjects
+    :param songs_objects: List of songObjects
     :return:
     """
     printer(f"Changing extensions in progress")
-    sp = ShowProgress(len(songsObjects), 10)
-    for elem in songsObjects:
+    sp = ShowProgress(len(songs_objects), 10)
+    for elem in songs_objects:
         sp.step()
         if elem.filename is None:
             continue
@@ -344,29 +344,29 @@ def changeExtensions(songsObjects: List[SongObj]) -> None:
     pass
 
 
-def changeFilename(oldName: str, newFilename: str) -> None:
+def changeFilename(old_name: str, new_file_name: str) -> None:
     """
     Changes filenames of downloaded files using author and song title
-    :param oldName: Audio file name to change
-    :param newFilename: New file name
+    :param old_name: Audio file name to change
+    :param new_file_name: New file name
     :return:
     """
     # Copy file
-    copyFile(oldName, newFilename)
+    copyFile(old_name, new_file_name)
     # Delete old file
-    deleteFile(oldName)
+    deleteFile(old_name)
     pass
 
 
-def changeNames(songsObjects: List[SongObj]) -> None:
+def changeNames(songs_objects: List[SongObj]) -> None:
     """
     Changes and updates names for all songObjects
-    :param songsObjects: List of songObjects
+    :param songs_objects: List of songObjects
     :return:
     """
     printer(f"Changing names in progress")
-    sp = ShowProgress(len(songsObjects), 10)
-    for elem in songsObjects:
+    sp = ShowProgress(len(songs_objects), 10)
+    for elem in songs_objects:
         sp.step()
         if not elem.filename:
             continue
@@ -378,29 +378,29 @@ def changeNames(songsObjects: List[SongObj]) -> None:
     pass
 
 
-def main_1(filePath: str, saveDir: str = None) -> None:
+def main_1(input_file_name: str, save_dir: str = None) -> None:
     """
     Serial procedure for ALL songs. If anything goes wrong processed data is useless.
-    :param filePath: Text file containing author, song title data
-    :param saveDir: Directory where audio files should be saved
+    :param input_file_name: Text file containing author, song title data
+    :param save_dir: Directory where audio files should be saved
     :return:
     """
     # Save current directory
     currDir = os.getcwd()
-    if saveDir is not None:
+    if save_dir is not None:
         # Check directory change
-        changeDir(saveDir)
+        changeDir(save_dir)
         os.chdir(currDir)
         pass
     # Read file
-    lines = readAndSortTxtFile(filePath)
+    lines = readAndSortTxtFile(input_file_name)
     # Split author and song name
     author_titles = split_author_title(lines)
     # Search for YouTube links
     songsObjects = searchYoutube(author_titles)
-    if saveDir is not None:
+    if save_dir is not None:
         # Change dir
-        changeDir(saveDir)
+        changeDir(save_dir)
         pass
     # Download files
     downloadFiles(songsObjects)
@@ -413,29 +413,29 @@ def main_1(filePath: str, saveDir: str = None) -> None:
     pass
 
 
-def main_2(filePath: str, saveDir: str = None) -> None:
+def main_2(input_file_name: str, save_dir: str = None) -> None:
     """
     Serial download for each song. If anything goes wrong downloaded songs are ready to use.
-    :param filePath: Text file containing author, song title data
-    :param saveDir: Directory where audio files should be saved
+    :param input_file_name: Text file containing author, song title data
+    :param save_dir: Directory where audio files should be saved
     :return:
     """
     global PRINT_INFO
     PRINT_INFO = False
     # Save current directory
     currDir = os.getcwd()
-    if saveDir is not None:
+    if save_dir is not None:
         # Check directory change
-        changeDir(saveDir)
+        changeDir(save_dir)
         os.chdir(currDir)
         pass
     # Read file
-    lines = readAndSortTxtFile(filePath)
+    lines = readAndSortTxtFile(input_file_name)
     # Split author and song name
     author_titles = split_author_title(lines)
-    if saveDir is not None:
+    if save_dir is not None:
         # Change dir
-        changeDir(saveDir)
+        changeDir(save_dir)
         pass
     for at_pair in author_titles:
         # Search for YouTube links
@@ -452,8 +452,20 @@ def main_2(filePath: str, saveDir: str = None) -> None:
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Description of your program')
-    parser.add_argument('-f', '--foo', help='Description for foo argument', required=True)
-    parser.add_argument('-b', '--bar', help='Description for bar argument', required=True)
+    parser = argparse.ArgumentParser(description='YT_Audio allows you to download audio from YouTube videos.'
+                                                 'Only educational purpose. '
+                                                 'Remember to download copyrighted music from dedicated services.')
+    parser.add_argument('-rat', '--reqAuthTitle',
+                        help='Text file name containing author and song title info', required=True)
+
+    parser.add_argument('-s', '--savDir',
+                        help='Audio file saving relative directory', required=True)
     args = vars(parser.parse_args())
+
+    # Read arguments
+    save_directory = args['savDir']
+    text_file_name = args['reqAuthTitle']
+
+    # Start script
+    main_2(text_file_name, save_directory)
     pass
