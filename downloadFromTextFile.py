@@ -211,7 +211,7 @@ def singleSearchYouTube(single_author_title: Tuple[str, str]) -> Tuple[str, str]
             # Return found title and link
             return title, link
     # Nothing was found
-    return None
+    return '', ''
 
 
 class SongObj:
@@ -240,7 +240,7 @@ def searchYoutube(all_author_title: List[Tuple[str, str]]):
     for author_title in all_author_title:
         sp.step()
         ret = singleSearchYouTube(author_title)
-        if ret is None:
+        if any([not r for r in ret]):
             printer('"' + ' '.join(author_title) + '" Not found in YouTube search')
             continue
         songsObjects.append(
