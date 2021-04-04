@@ -34,5 +34,6 @@ TODO :)
 # ToDo
 1) ~~Simple interface and code clean up~~
 2) Reading files with links
-3) Downloading playlists
+3) Downloading YouTube playlists
 4) Customizable saved file parameters (extension, quality, etc)
+5) Downloading Spotify playlists
