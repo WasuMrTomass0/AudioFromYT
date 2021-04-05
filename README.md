@@ -2,7 +2,6 @@
 Let's you generate youtube video links which can be used to download audio by ```youtube-dl```.
 
 **Requirements:**
-- ```youtube_dl```
 - ```youtube-search-python```
 
 **How to use it?**
