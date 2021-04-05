@@ -1,12 +1,10 @@
 from __future__ import unicode_literals
 from youtubesearchpython import VideosSearch
-from youtube_dl import YoutubeDL
 from typing import List, Tuple
 import argparse
 import os
 
 # Global variables
-audio_downloader = YoutubeDL({'format': 'bestaudio'})
 PRINT_INFO = True
 
 # Defaults
