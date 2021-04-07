@@ -31,6 +31,7 @@ https://www.youtube.com/watch?v=2N4t_kChuiU
 - ```youtube_dl```
 
 **How to download songs from generated file?**
+- Run script ```download_audio.py -h``` and follow instructions
 - Run command
 ```console
 youtube-dl -x -o %(title)s.%(ext)s --no-playlist --audio-format AUDIO_FORMAT -a LINK_FILE
@@ -39,4 +40,3 @@ where: \
 ```AUDIO_FORMAT``` is your preferred audio format - for example mp3 \
 ```LINK_FILE``` is the name of generated file with links
 
-- Run script ```download_audio.py -in LINK_FILE -af AUDIO_FORMAT```
