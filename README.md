@@ -31,7 +31,8 @@ https://www.youtube.com/watch?v=2N4t_kChuiU
 - ```youtube_dl```
 
 **How to download songs from generated file?**
-- Run script ```download_audio.py -h``` and follow instructions
+- Run script ```download_audio.py -h``` and follow instructions. It let's you choose save directory\
+or
 - Run command
 ```console
 youtube-dl -x -o %(title)s.%(ext)s --no-playlist --audio-format AUDIO_FORMAT -a LINK_FILE
