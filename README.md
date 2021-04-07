@@ -1,39 +1,43 @@
-# Audio downloader
-Let's you download audio files (music) from youtube. It uses ```youtube-dl``` and ```ffmpeg``` to save files in ``mp3`` format.
+# Link generator
+Let's you generate youtube video links which can be used to download audio by ```youtube-dl```.
 
-# requirements
-- ```ffmpeg``` - After installation add path to ```<..>\ffmpeg\bin``` to your system variables AND **restart** your computer
-- Python modules in ```requirements.txt```
+**Requirements:**
+- ```youtube-search-python```
 
-# How to use?
-Install all requirements. \
-Prepare txt file with ```Author - Title of a song``` lines. At this moment you have to use '-' as a separator. \
-Run ```YT_Audio.py -h``` in console for more info.
-Remember to use ```python <command>``` on Windows machines.
-
-## Example:
-##### 1) Use Author-Title text file
-Prepare *MySongs.txt* file containing:
-```text
+**How to use it?**
+- Create ```input.txt``` text file with ```author - song title``` pairs in each line. 
+Example ```input.txt``` file:
+```
 Adventures - A Himitsu
 Vexento - We are one
 Buddha - Kontekst
 ```
-and run this command in your console:
-```console
-YT_Audio.py -ret MySongs.txt -s MyMusicFolder
+- Install requirements with ```pip install -r requirements.txt```.
+- Run ```gen_links.py -in input.txt -out my_links.txt```.
+- Results in ```my_links.txt```:
 ```
-This will download all 3 songs and save them in 'MyMusicFolder' folder on your machine.
+# Adventures - A Himitsu
+https://www.youtube.com/watch?v=6E0zgBxObkk
+# Buddha - Kontekst
+https://www.youtube.com/watch?v=3oZ8vwNfC2s
+# Vexento - We Are One
+https://www.youtube.com/watch?v=2N4t_kChuiU
+```
+- Run ```gen_links.py -h``` for more options.
 
-##### 2) Use URLs text file
-TODO :)
+# Downloading audio
+**Requirements:**
+- ```ffmpeg``` - Add path to ```<..>\ffmpeg\bin``` to your system variables and **restart** your computer
+- ```youtube_dl```
 
-##### 3) Use YouTube playlist's URL
-TODO :)
+**How to download songs from generated file?**
+- Run script ```download_audio.py -h``` and follow instructions. It let's you choose save directory\
+or
+- Run command
+```console
+youtube-dl -x -o %(title)s.%(ext)s --no-playlist --audio-format AUDIO_FORMAT -a LINK_FILE
+```
+where: \
+```AUDIO_FORMAT``` is your preferred audio format - for example mp3 \
+```LINK_FILE``` is the name of generated file with links
 
-# ToDo
-1) ~~Simple interface and code clean up~~
-2) Reading files with links
-3) Downloading YouTube playlists
-4) Customizable saved file parameters (extension, quality, etc)
-5) Downloading Spotify playlists
